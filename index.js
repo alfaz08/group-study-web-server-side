@@ -69,6 +69,33 @@ async function run() {
       res.send(result)
      })
 
+     //update data
+     app.get('/allassignment/:id',async(req,res)=>{
+      const id =req.params.id;
+      const query ={_id: new ObjectId(id)}
+      const assignment =await assignmentCollection.findOne(query)
+      res.send(assignment)
+     })
+    
+     app.put('/allassignment/:id',async(req,res)=>{
+      const id =req.params.id;
+      const assignment =req.body
+      console.log(assignment);
+      const filter ={_id: new ObjectId(id)}
+      const options ={upsert: true}
+      const updatedAssignment = {
+        $set:{
+          title: assignment.title,
+          des: assignment.des,
+          photo: assignment.photo,
+          type: assignment.type,
+          marks: assignment.marks,
+          date:assignment.date,
+        }
+      }
+      const result = await assignmentCollection.updateOne(filter,updatedAssignment,options)
+      res.send(result)
+     })
 
 
 
