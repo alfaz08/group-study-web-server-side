@@ -70,14 +70,14 @@ async function run() {
      })
 
      //update data
-     app.get('/allassignment/:id',async(req,res)=>{
+     app.get('/update/:id',async(req,res)=>{
       const id =req.params.id;
       const query ={_id: new ObjectId(id)}
       const assignment =await assignmentCollection.findOne(query)
       res.send(assignment)
      })
     
-     app.put('/allassignment/:id',async(req,res)=>{
+     app.put('/update/:id',async(req,res)=>{
       const id =req.params.id;
       const assignment =req.body
       console.log(assignment);
@@ -97,10 +97,18 @@ async function run() {
       res.send(result)
      })
 
+    //create database for submit assignment
+    const submitCollection = client.db("groupStudyDB").collection("submitassignment")
+    //assignment submission post
+    app.post('/submitassignment',async(req,res)=>{
+      const newSubmitAssignment = req.body;
+      const result = await submitCollection.insertOne(newSubmitAssignment)
+      res.send(result)
+    })
+  
 
 
-
-
+  
 
 
 
