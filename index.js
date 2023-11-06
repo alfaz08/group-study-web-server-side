@@ -106,9 +106,14 @@ async function run() {
       res.send(result)
     })
   
+   //submit assignment data read
+   app.get('/submitassignment',async(req,res)=>{
+    const cursor =submitCollection.find()
+    const result=await cursor.toArray()
+    res.send(result)
+   })
 
-
-  
+    
 
 
 
