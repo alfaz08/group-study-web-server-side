@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require('express')
 const cors = require('cors')
 const app =express();
 const port = process.env.PORT || 5000
@@ -6,12 +6,17 @@ require('dotenv').config()
 
 
 //middleware
-app.use(cors())
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:5174'],
+  credentials: true
+}));
 app.use(express.json())
 
 app.get('/',(req,res)=>{
   res.send('group study server is running')
 })
+
+
 
 app.listen(port,()=>{
   console.log(`server is running on PORT: ${port}`);
@@ -106,14 +111,57 @@ async function run() {
       res.send(result)
     })
   
+   //another 
+   app.get('/submitassignment/:id',async(req,res)=>{
+    const id =req.params.id;
+    const query ={_id: new ObjectId(id)}
+    const assignment =await submitCollection.findOne(query)
+    res.send(assignment)
+   })
+
+    //update status
+    app.patch('/submitassignment/:id',async(req,res)=>{
+      const id=req.params.id;
+      const filter ={_id: new ObjectId(id)}
+      const updateSubmitAssignment = req.body;
+      console.log(updateSubmitAssignment);
+      const updateDoc ={
+        $set:{
+          status: updateSubmitAssignment.status
+        }
+      }
+      const result =await submitCollection.updateOne(filter,updateDoc)
+      res.send(result)
+
+    })
+
+
+
+
    //submit assignment data read
    app.get('/submitassignment',async(req,res)=>{
+     console.log(req.query);
     const cursor =submitCollection.find()
     const result=await cursor.toArray()
     res.send(result)
    })
 
+   //submit get email specific
+
+  app.get('/submitassignment/byemail',async(req,res)=>{
+     console.log(req.query);
+     let query={}
+     if(req.query?.email){
+      query={email:req.query.email}
+     }
+    const cursor =submitCollection.find(query)
+    const result=await cursor.toArray()
+    res.send(result)
+   })
     
+
+
+
     //create database for submit assignment
     const markedCollection = client.db("groupStudyDB").collection("markedassignment")
 
@@ -129,6 +177,8 @@ app.get('/markedassignment',async(req,res)=>{
   const result=await cursor.toArray()
   res.send(result)
  })
+  
+
 
 
 
