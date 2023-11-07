@@ -114,7 +114,15 @@ async function run() {
    })
 
     
+    //create database for submit assignment
+    const markedCollection = client.db("groupStudyDB").collection("markedassignment")
 
+  //assignment marked post
+  app.post('/markedassignment',async(req,res)=>{
+    const newMarkedAssignment = req.body;
+    const result = await submitCollection.insertOne(newMarkedAssignment)
+    res.send(result)
+  })
 
 
 
