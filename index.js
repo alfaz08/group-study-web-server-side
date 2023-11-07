@@ -120,10 +120,15 @@ async function run() {
   //assignment marked post
   app.post('/markedassignment',async(req,res)=>{
     const newMarkedAssignment = req.body;
-    const result = await submitCollection.insertOne(newMarkedAssignment)
+    const result = await markedCollection.insertOne(newMarkedAssignment)
     res.send(result)
   })
-
+//submit assignment data read
+app.get('/markedassignment',async(req,res)=>{
+  const cursor =markedCollection.find()
+  const result=await cursor.toArray()
+  res.send(result)
+ })
 
 
 
