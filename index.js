@@ -65,6 +65,17 @@ async function run() {
       res.send(result)
     })
 
+
+
+    //pagination all data
+    app.get('/allassignmentcount',async(req,res)=>{
+      const count =await assignmentCollection.estimatedDocumentCount()
+      res.send({count})
+    })
+
+
+
+
      //delete data
      app.delete('/allassignment/:id',async(req,res)=>{
       const id=req.params.id;
@@ -110,30 +121,66 @@ async function run() {
       const result = await submitCollection.insertOne(newSubmitAssignment)
       res.send(result)
     })
+
   
    //another 
-   app.get('/submitassignment/:id',async(req,res)=>{
+   app.get('/marked/:id',async(req,res)=>{
     const id =req.params.id;
     const query ={_id: new ObjectId(id)}
     const assignment =await submitCollection.findOne(query)
     res.send(assignment)
    })
 
-    //update status
-    app.patch('/submitassignment/:id',async(req,res)=>{
-      const id=req.params.id;
-      const filter ={_id: new ObjectId(id)}
-      const updateSubmitAssignment = req.body;
-      console.log(updateSubmitAssignment);
-      const updateDoc ={
+   //update
+   app.patch('/marked/:id',async(req,res)=>{
+    const id = req.params.id;
+    const filter ={_id: new ObjectId(id)}
+    const updateSubmitAssignment = req.body;
+    console.log(updateSubmitAssignment);
+      const updateDoc = {
         $set:{
-          status: updateSubmitAssignment.status
+          status: updateSubmitAssignment.status,
+          givenNumber: updateSubmitAssignment.givenNumber,
+          feedback: updateSubmitAssignment.feedback,
+          
         }
       }
-      const result =await submitCollection.updateOne(filter,updateDoc)
+      const result= await submitCollection.updateOne(filter,updateDoc)
       res.send(result)
+   })
+   
 
-    })
+//submit get email specific
+
+// app.get('/submitassignment/byemail',async(req,res)=>{
+//   console.log(req.query);
+// //   let query={}
+// //   if(req.query?.email){
+// //    query={email:req.query.email}
+// //   }
+// //  const cursor =submitCollection.find(query)
+// //  const result=await cursor.toArray()
+// //  res.send(result)
+// })
+
+
+
+
+    // //update status
+    // app.patch('/submitassignment/:id',async(req,res)=>{
+    //   const id=req.params.id;
+    //   const filter ={_id: new ObjectId(id)}
+    //   const updateSubmitAssignment = req.body;
+    //   console.log(updateSubmitAssignment);
+    //   const updateDoc ={
+    //     $set:{
+    //       status: updateSubmitAssignment.status
+    //     }
+    //   }
+    //   const result =await submitCollection.updateOne(filter,updateDoc)
+    //   res.send(result)
+
+    // })
 
 
 
@@ -146,40 +193,31 @@ async function run() {
     res.send(result)
    })
 
-   //submit get email specific
 
-  app.get('/submitassignment/byemail',async(req,res)=>{
-     console.log(req.query);
-     let query={}
-     if(req.query?.email){
-      query={email:req.query.email}
-     }
-    const cursor =submitCollection.find(query)
-    const result=await cursor.toArray()
-    res.send(result)
-   })
+  
+   
     
 
 
 
-    //create database for submit assignment
-    const markedCollection = client.db("groupStudyDB").collection("markedassignment")
+//     //create database for submit assignment
+//     const markedCollection = client.db("groupStudyDB").collection("markedassignment")
 
-  //assignment marked post
-  app.post('/markedassignment',async(req,res)=>{
-    const newMarkedAssignment = req.body;
-    const result = await markedCollection.insertOne(newMarkedAssignment)
-    res.send(result)
-  })
-//submit assignment data read
-app.get('/markedassignment',async(req,res)=>{
-  const cursor =markedCollection.find()
-  const result=await cursor.toArray()
-  res.send(result)
- })
+//   //assignment marked post
+//   app.post('/markedassignment',async(req,res)=>{
+//     const newMarkedAssignment = req.body;
+//     const result = await markedCollection.insertOne(newMarkedAssignment)
+//     res.send(result)
+//   })
+// //submit assignment data read
+// app.get('/markedassignment',async(req,res)=>{
+//   const cursor =markedCollection.find()
+//   const result=await cursor.toArray()
+//   res.send(result)
+//  })
   
 
-
+  
 
 
 
