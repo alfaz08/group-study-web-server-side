@@ -1,16 +1,47 @@
 const express = require('express')
 const cors = require('cors')
 const app =express();
+const cookieParser = require('cookie-parser')
 const port = process.env.PORT || 5000
+const jwt = require('jsonwebtoken')
 require('dotenv').config()
-
-
 //middleware
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174'],
+  origin: ['https://group-study-web.web.app', 'https://group-study-web.firebaseapp.com'],
   credentials: true
 }));
 app.use(express.json())
+
+app.post('/jwt',async(req,res)=>{
+  const user =req.body;
+  console.log('user for token',user);
+  const token =jwt.sign(user,process.env.ACCESS_TOKEN_SECRET,{expiresIn:'1h'});
+    res.cookie('token', token, {
+   httpOnly: true,
+   secure: process.env.NODE_ENV === 'production',
+   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+   })
+  
+  
+})
+ 
+app.post('/logout',async(req,res)=>{
+  const user=req.body;
+  console.log('logout',user);
+  res.clearCookie(
+    "token",
+    {
+    maxAge: 0,
+    secure: process.env.NODE_ENV === "production" ? true : false,
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+    }
+    )
+   
+})
+
+
+
+
 
 app.get('/',(req,res)=>{
   res.send('group study server is running')
@@ -22,8 +53,7 @@ app.listen(port,()=>{
   console.log(`server is running on PORT: ${port}`);
 })
 
-console.log(process.env.DB_USER);
-console.log(process.env.DB_PASS);
+
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.fpdogwm.mongodb.net/?retryWrites=true&w=majority`;
@@ -40,7 +70,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
    
     //database collection
     const assignmentCollection = client.db("groupStudyDB").collection("allassignment")
@@ -227,7 +257,7 @@ async function run() {
 
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
